@@ -6,15 +6,15 @@ Source code for [WebNav: A New Large-Scale Task for Natural Language based Seque
 
 The files used in the project can be [downloaded here](https://drive.google.com/folderview?id=0B5LbsF7OcHjqUFhWQ242bzdlTWc&usp=sharing):
 
-- **wiki.hdf5**: English Wikipedia articles and hyperlinks (compiled from the [dump file of September/2015](https://dumps.wikimedia.org/enwiki/20150901/enwiki-20150901-pages-articles.xml.bz2)).
-- **wiki_emb.hdf5**: Articles' embeddings, computed as the average word vector representation of all the words in the
+* **wiki.hdf5**: English Wikipedia articles and hyperlinks (compiled from the [dump file of September/2015](https://dumps.wikimedia.org/enwiki/20150901/enwiki-20150901-pages-articles.xml.bz2)).
+* **wiki_emb.hdf5**: Articles' embeddings, computed as the average word vector representation of all the words in the
 article. This file is used to speed-up training by providing pre-computed embeddings.
-- **queries_paths.zip**: queries and paths (list of pages to be followed until the target node is reached).
-- **D_cbow_pdw_8B.pkl**: a python dictionary containing 374,000 words where the values are pretrained embeddings as in ["Learning to Understand Phrases by Embedding the Dictionary"](http://arxiv.org/pdf/1504.00548v3.pdf).
-- **wiki_idf.pkl**: a python dictionary containing 374,000 words where the values are the Inverse Document Frequencies (IDF) computed from the English Wikipedia.
-- **cat_pages.pkl**: a python dictionary where the keys are the Wikipedia's categories and the values are the lists of pages inside the categories.
-- **page_pos.pkl**: a python dictionary where the keys are the articles' titles and the values are the page positions (offset in bytes) in the Wikipedia's dump file.
-- **page_size.pkl**: a python dictionary where the keys are the articles' titles and the values are the page sizes (in bytes) in the Wikipedia's dump file.
+* **queries_paths.zip**: queries and paths (list of pages to be followed until the target node is reached).
+* **D_cbow_pdw_8B.pkl**: a python dictionary containing 374,000 words where the values are pretrained embeddings as in ["Learning to Understand Phrases by Embedding the Dictionary"](http://arxiv.org/pdf/1504.00548v3.pdf).
+* **wiki_idf.pkl**: a python dictionary containing 374,000 words where the values are the Inverse Document Frequencies (IDF) computed from the English Wikipedia.
+* **cat_pages.pkl**: a python dictionary where the keys are the Wikipedia's categories and the values are the lists of pages inside the categories.
+* **page_pos.pkl**: a python dictionary where the keys are the articles' titles and the values are the page positions (offset in bytes) in the Wikipedia's dump file.
+* **page_size.pkl**: a python dictionary where the keys are the articles' titles and the values are the page sizes (in bytes) in the Wikipedia's dump file.
 
 
 Due to their large sizes, the wikipedia articles and queries files are stored in the HDF5 format,
