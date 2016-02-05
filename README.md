@@ -4,7 +4,7 @@ Source code for [WebNav: A New Large-Scale Task for Natural Language based Seque
 
 ## Dataset and Other Files
 
-The files used in the project can be [downloaded here](https://drive.google.com/folderview?id=0B5LbsF7OcHjqUFhWQ242bzdlTWc&usp=sharing):
+The dataset and auxiliary files can be [downloaded here](https://drive.google.com/folderview?id=0B5LbsF7OcHjqUFhWQ242bzdlTWc&usp=sharing):
 
 * **wiki.hdf5**: English Wikipedia articles and hyperlinks (compiled from the [dump file of September/2015](https://dumps.wikimedia.org/enwiki/20150901/enwiki-20150901-pages-articles.xml.bz2)).
 * **wiki_emb.hdf5**: Articles' embeddings, computed as the average word vector representation of all the words in the
@@ -17,7 +17,7 @@ article. This file is used to speed-up training by providing pre-computed embedd
 * **page_size.pkl**: a python dictionary where the keys are the articles' titles and the values are the page sizes (in bytes) in the Wikipedia's dump file.
 
 
-## Accessing the dataset
+## Accessing the Dataset
 
 Due to their large sizes, the wikipedia articles and queries files are stored in the HDF5 format,
 which allows fast access without having to load them entirely into memory.
@@ -73,7 +73,7 @@ print p_train[100] # get the path for query #100
 ```
 
 
-##Creating your own dataset
+##Creating Your Own Dataset
 
 If you want to generate your own dataset from a website, run 'create_dataset.py'. Don't forget to change the paths inside the parameters.py file to point to where you want to save the dataset.
 
@@ -83,7 +83,7 @@ A simple example of a parser class with no text cleaning is provided in simple_p
 
 
 
-## Running the model
+## Running the Model
 
 After changing the properties in the parameters.py file to point to your local paths, the model can be trained using the following command:
 
