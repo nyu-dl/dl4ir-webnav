@@ -2,7 +2,7 @@
 
 Source code for [WebNav: A New Large-Scale Task for Natural Language based Sequential Decision Making](http://arxiv.org/abs/)
 
-## Accessing the dataset
+## Dataset and Other Files
 
 The files used in the project can be [downloaded here](https://drive.google.com/folderview?id=0B5LbsF7OcHjqUFhWQ242bzdlTWc&usp=sharing):
 
@@ -16,6 +16,8 @@ article. This file is used to speed-up training by providing pre-computed embedd
 * **page_pos.pkl**: a python dictionary where the keys are the articles' titles and the values are the page positions (offset in bytes) in the Wikipedia's dump file.
 * **page_size.pkl**: a python dictionary where the keys are the articles' titles and the values are the page sizes (in bytes) in the Wikipedia's dump file.
 
+
+## Accessing the dataset
 
 Due to their large sizes, the wikipedia articles and queries files are stored in the HDF5 format,
 which allows fast access without having to load them entirely into memory.
