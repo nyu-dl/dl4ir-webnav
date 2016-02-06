@@ -53,16 +53,20 @@ while hops <= prm.max_hops_pages:
             # if parse was successfull:
             if article:
                 text, links = article
-                if len(links) <= prm.max_links:
-		            pages[title] = {}
-		            pages[title]['text'] = text
-		            pages[title]['links'] = links
-		            #print 'time total', (time.time() - st), ' time inside', (time.time() - st1), ' time recursive', (st3 - st2)
 
-		            log_txt = 'hops: ' + str(hops) + ' page num: ' + str(len(pages)) 
-		            with open('out2.log', 'a') as ftemp:
-		                ftemp.write(log_txt+'\n')
-		            print log_txt
+                if prm.max_links:
+                    if len(links) > prm.max_links:
+                        continue
+
+          pages[title] = {}
+          pages[title]['text'] = text
+          pages[title]['links'] = links
+          #print 'time total', (time.time() - st), ' time inside', (time.time() - st1), ' time recursive', (st3 - st2)
+
+          log_txt = 'hops: ' + str(hops) + ' page num: ' + str(len(pages)) 
+          with open('out2.log', 'a') as ftemp:
+              ftemp.write(log_txt+'\n')
+          print log_txt
 
         if title in pages: #if the page was added to the pages, then get some sample queries and next page
 

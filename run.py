@@ -190,6 +190,7 @@ def init_params():
     if prm.attention:
         params['E_A'] = 0.01 * np.random.randn(prm.dim_emb, 1).astype(config.floatX)
         params['U_A'] = 0.01 * np.random.randn(prm.dim_proj, 1).astype(config.floatX)
+        params['L_A'] = 0.01 * np.random.randn(prm.dim_proj, 1).astype(config.floatX)
         params['b_A'] = np.zeros((1,)).astype(config.floatX) # bias
 
     if prm.idb:
@@ -274,6 +275,7 @@ def build_model(tparams, baseline_vars, stats_vars, options):
         if prm.attention:
             e = tensor.dot(q_a, tparams['E_A'])[:,:,0]
             e += tensor.dot(h_, tparams['U_A'])[:,0][:,None]
+            e += tensor.dot(l_a_, tparams['L_A'])[:,0][:,None]
             e += tparams['b_A'][None,0][:,None]
             # repeat for beam search
             q_m_ = tensor.extra_ops.repeat(q_m, k_beam, axis=0)
@@ -433,8 +435,8 @@ def build_model(tparams, baseline_vars, stats_vars, options):
     else:
         R_mean = R.mean()
         R_std = R.std()
-        R_mean_ = 0.8 * baseline_vars['R_mean'] + 0.2 * R_mean
-        R_std_ = 0.8 * baseline_vars['R_std'] + 0.2 * R_std
+        R_mean_ = 0.9 * baseline_vars['R_mean'] + 0.1 * R_mean
+        R_std_ = 0.9 * baseline_vars['R_std'] + 0.1 * R_std
 
         # Update baseline vars.
         baseline_updates = [(baseline_vars['R_mean'], R_mean_), 
@@ -442,14 +444,15 @@ def build_model(tparams, baseline_vars, stats_vars, options):
 
         if prm.idb:
             # input-dependent baseline
-            R_idb = tensor.dot(h[j, tensor.arange(h.shape[1]), :], tparams['R_W']) + tparams['R_b']
+            #R_idb = tensor.dot(h[j, tensor.arange(h.shape[1]), :], tparams['R_W']) + tparams['R_b']
+            R_idb = tensor.dot(h.mean(0), tparams['R_W']) + tparams['R_b']
             R_ = (R[:,None] - R_mean_ - R_idb) / tensor.maximum(1., R_std_)
         else:
             R_ = (R[:,None] - R_mean_) / tensor.maximum(1., R_std_)
         R_ = R_[:,0]
         consider_constant += [R_]
 
-        cost = ( ( R_ * -tensor.log(l_prob + off) + cost_ent) * mask_).sum(0).mean()
+        cost = ( ( R_ * -tensor.log(tensor.maximum(l_prob, 0.1)) + cost_ent) * mask_).sum(0).mean() #Clipping l_prob so -log do not become too large.
 
         if prm.idb:
             R0 = R[:,None] - R_mean_
@@ -597,7 +600,7 @@ def train_lstm():
     if prm.supervised:
         baseline_vars = {}
     else:
-        R_mean = theano.shared(0.6*np.ones((1,)), name='R_mean')
+        R_mean = theano.shared(0.71*np.ones((1,)), name='R_mean')
         R_std = theano.shared(np.ones((1,)), name='R_std')
         baseline_vars = {'R_mean': R_mean, 'R_std': R_std}
 
