@@ -1,10 +1,17 @@
 # WebNav
 
-Source code for [WebNav: A New Large-Scale Task for Natural Language based Sequential Decision Making](http://arxiv.org/abs/)
+WebNav is goal-driven web navigation as a benchmark task for evaluating an agent with abilities to understand natural language and plan on partially observed environments. In this challenging task, an agent navigates through a web site consisting of web pages and hyperlinks to find a web page in which a query appears.
 
-## Dataset and Other Files
+WebNav automatically transforms a website into this goal-driven web navigation task. As an example, we make WikiNav, a dataset constructed from the English Wikipedia containing approximately 5 million articles and more than 12 million queries for training. 
 
-The dataset and auxiliary files can be [downloaded here](https://drive.google.com/folderview?id=0B5LbsF7OcHjqUFhWQ242bzdlTWc&usp=sharing):
+With this benchmark, we expect faster progress in developing artificial agents with natural language understanding and planning skills.
+
+Original paper: [WebNav: A New Large-Scale Task for Natural Language based Sequential Decision Making](http://arxiv.org/abs/)
+
+
+## WikiNav Dataset and Other Files
+
+The WikiNav dataset and auxiliary files can be [downloaded here](https://drive.google.com/folderview?id=0B5LbsF7OcHjqUFhWQ242bzdlTWc&usp=sharing):
 
 * **wiki.hdf5**: English Wikipedia articles and hyperlinks (compiled from the [dump file of September/2015](https://dumps.wikimedia.org/enwiki/20150901/enwiki-20150901-pages-articles.xml.bz2)).
 * **wiki_emb.hdf5**: Articles' embeddings, computed as the average word vector representation of all the words in the
