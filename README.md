@@ -1,6 +1,6 @@
 # WebNav
 
-WebNav is goal-driven web navigation as a benchmark task for evaluating an agent with abilities to understand natural language and plan on partially observed environments. In this challenging task, an agent navigates through a web site consisting of web pages and hyperlinks to find a web page in which a query appears.
+WebNav is a benchmark task for evaluating an agent with abilities to understand natural language and plan on partially observed environments. In this challenging task, an agent navigates through a web site consisting of web pages and hyperlinks to find a web page in which a query appears.
 
 WebNav automatically transforms a website into this goal-driven web navigation task. As an example, we make WikiNav, a dataset constructed from the English Wikipedia containing approximately 5 million articles and more than 12 million queries for training. 
 
