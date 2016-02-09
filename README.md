@@ -6,7 +6,7 @@ WebNav automatically transforms a website into this goal-driven web navigation t
 
 With this benchmark, we expect faster progress in developing artificial agents with natural language understanding and planning skills.
 
-Original paper: [WebNav: A New Large-Scale Task for Natural Language based Sequential Decision Making](http://arxiv.org/abs/)
+Link to the paper: [WebNav: A New Large-Scale Task for Natural Language based Sequential Decision Making](http://arxiv.org/pdf/1602.02261v1.pdf)
 
 
 ## WikiNav Dataset and Other Files
