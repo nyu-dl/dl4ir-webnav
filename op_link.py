@@ -52,7 +52,6 @@ class Link(theano.Op):
             if it in self.mem[uidx]:
                 L, L_m, l_page_id, l_truth = self.mem[uidx][it]
                 run = False
-        #total = 0.
         if run:
             if prm.att_doc:
                 L = np.zeros((len(pages_id), prm.max_links, prm.max_segs_doc, prm.dim_emb), np.float32)
@@ -69,9 +68,7 @@ class Link(theano.Op):
                         # Get links' BoW.
                         links = list(set(links)) # remove duplicates.
                         links.sort() # h5py only accepts sorted indexes.
-                        #st1 = time.time()
                         links_emb = self.wikiemb.f['emb'][links]
-                        #total += time.time() - st1
                         if prm.att_doc:
                             L[i,:len(links),:,:] = links_emb
                             links_mask = self.wikiemb.f['mask'][links]

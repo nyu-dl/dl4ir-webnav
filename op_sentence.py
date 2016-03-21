@@ -52,7 +52,7 @@ class Sentence(theano.Op):
                 if q_m[i/div][j] > 0.:
                     q_bow[ax] = 0
             set_q_bow = set(q_bow.keys())
-       
+
             sents = []
             ref_id = []
             ref_range = []
@@ -82,7 +82,7 @@ class Sentence(theano.Op):
                 sents_idx.append(words)
                 c[j] = len(list(set(sent_bow.keys()) & set_q_bow)) # Count how many elements they have in common
                 s[j] = len(sent_bow)
-         
+  
             match_rate = 2 * c / (len(set_q_bow) + s)
             idx = np.argmax(match_rate)
             R[i/div] = float(match_rate[idx] == 1.) # make reward \in {0,1}

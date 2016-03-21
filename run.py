@@ -337,7 +337,7 @@ def val(q_a, q_m, h_, l_a_, c_, m_, L_a, L_m, tparams, k_beam, n_samples, uidx):
     stop = tparams['stop'][None, None, :]
     stop = tensor.extra_ops.repeat(x=stop, repeats=n_samples * k_beam, axis=0)
     L_as = tensor.concatenate([L_at, stop], axis=1)
-    stop_m = tensor.alloc(np_floatX(1.), n_samples*k_beam, 1)
+    stop_m = tensor.alloc(np_floatX(1.), n_samples * k_beam, 1)
     L_ms = tensor.concatenate([L_m, stop_m], axis=1)
 
     z = tensor.tanh(tensor.dot(h, tparams['U_O']) + tparams['b_U_O'])
@@ -418,10 +418,11 @@ def ff(q, q_m, k_beam, trng, is_train, options, uidx, tparams, mixer, sup, root_
 
                     greedy = tensor.eq(is_train,1.).astype('float32') * (trng.uniform(size=(n_samples,)) > epsilon) + \
                              (1. - tensor.eq(is_train,1.).astype('float32'))
-                    randd = tensor.round(trng.uniform(size=(n_samples,)) * L_ms.sum(1)).astype('int32') - 1
+
+                    randd = tensor.floor(trng.uniform(size=(n_samples,)) * L_ms.sum(1)).astype('int32') - 1
 
                     # Convert the stop action (idx = -1) to the last index.
-                    randd = tensor.eq(randd, -1).astype('float32') * (L_ms.shape[1] - 1) + tensor.neq(randd, -1) * randd
+                    randd = tensor.eq(randd, -1).astype('float32') * (L_ms.shape[1] - 1) + tensor.neq(randd, -1).astype('float32') * randd
 
                     res_pre = tensor.eq(it, 0.).astype('int32') * dist[:,:n_links].argsort(axis=1)[:, -k_beam:].flatten().astype("int32") \
                            + (1 - tensor.eq(it, 0.).astype('int32')) * dist.argsort(axis=1)[:, -k_beam:].reshape((n_samples * k_beam,)).astype("int32")
@@ -431,6 +432,7 @@ def ff(q, q_m, k_beam, trng, is_train, options, uidx, tparams, mixer, sup, root_
                     randd = tensor.extra_ops.repeat(randd, k_beam, axis=0)
 
                     res_ = (1. - greedy) * randd + greedy * res_pre
+                    #res_ = res_pre
 
                 elif prm.act_sel.lower() == 'softmax':
                     dist = softmax_mask(dist, L_ms)
@@ -473,11 +475,12 @@ def ff(q, q_m, k_beam, trng, is_train, options, uidx, tparams, mixer, sup, root_
         # supervised only: compute the cost for page selection
         cost_p = -tensor.log(dist[tensor.arange(dist.shape[0]), l_truth] + off)
 
-        m = 1.0 - tensor.eq(l_idx1, n_links-1).astype("float32")
+        # check if the stop action was chosen.
+        m = tensor.neq(l_idx1, n_links-1).astype("float32")
 
-        # update the mask vector for the coming iterations.
-        m = m * m_ #consider previous mask
-            
+        # consider previous mask.
+        m *= m_ 
+        
         # Get indices of the next articles.
         p = l_page[l_idx0, l_idx1]
 
@@ -1020,7 +1023,7 @@ def train_lstm():
                         t[i,j] = 1.
                         
                         add = True
-                        if prm.selective_mem >= 0:
+                        if prm.selective_mem >= 0 and uidx > 1:
                             # Selective memory: keep the percentage of memories
                             # with reward=1 approximately equal to <selective_mem>.
                             pr = float(np.asarray(experience_r).sum()) / max(1., float(len(experience_r)))
