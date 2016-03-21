@@ -30,16 +30,8 @@ class Wiki():
         '''
         Return a dictionary where the keys are articles' titles and the values are their offset in the data array.
         '''
-        out = {}
+        return dict((el,i) for i,el in enumerate(self.f['title'].value))
        
-        for i in xrange(len(self.f['title'])):
-            out[self.get_article_title(i)] = i
-        return out
-
-
-    def get_links_iter(self):
-        return self.f['links']
-
 
     def get_text_iter(self):
         return self.f['text']

@@ -5,7 +5,7 @@ Miscellaneous functions.
 import numpy as np
 import cPickle as pkl
 from nltk.tokenize import wordpunct_tokenize
-import re
+import parameters as prm
 
 def BOW(words, vocab):
     '''
@@ -37,6 +37,41 @@ def BOW2(texts, vocab, dim):
         bow = BOW(wordpunct_tokenize(text), vocab)
         out[i,:len(bow[0])] = bow[0]
         mask[i,:len(bow[1])] = bow[1]
+
+    return out, mask
+
+
+def Word2Vec_encode(texts, wemb):
+    
+    out = np.zeros((len(texts), prm.dim_emb), dtype=np.float32)
+    for i, text in enumerate(texts):
+        words = wordpunct_tokenize(text)
+        n = 0.
+        for word in words:
+            if word in wemb:
+                out[i,:] += wemb[word]
+                n += 1.
+        out[i,:] /= max(1.,n)
+
+    return out
+
+
+def text2idx2(texts, vocab, dim):
+    '''
+    Convert a list of texts to their corresponding vocabulary indexes.
+    '''
+    out = np.zeros((len(texts), dim), dtype=np.int32)
+    mask = np.zeros((len(texts), dim), dtype=np.float32)
+    for i, text in enumerate(texts):
+        j = 0
+        for word in wordpunct_tokenize(text):
+            if word in vocab:
+                out[i,j] = vocab[word]
+                mask[i,j] = 1.
+                j += 1
+
+                if j == dim:
+                    break
 
     return out, mask
 

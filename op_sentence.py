@@ -45,11 +45,17 @@ class Sentence(theano.Op):
 
         best_answers = []
         max_words = 0
-        for i in range(0, len(pages_id), div):
-            q_bow = list(q[i/div][q_m[i/div]>0.])
 
+        for i in range(0, len(pages_id), div):
+            q_bow = {}
+            for j, ax in enumerate(q[i/div]):
+                if q_m[i/div][j] > 0.:
+                    q_bow[ax] = 0
+            set_q_bow = set(q_bow.keys())
+       
             sents = []
             ref_id = []
+            ref_range = []
             for j in range(div):
                 page_id = pages_id[i+j]
                 if int(page_id) != -1:
@@ -63,20 +69,24 @@ class Sentence(theano.Op):
                         sents.append(sent.strip())
                         ref_id.append(page_id)
 
+                    ref_range.append([j,len(sents)])
             s = np.zeros((len(sents)), np.float32)
             c = np.zeros((len(sents)), np.float32)
             sents_idx = []
             for j, sent in enumerate(sents):
                 words = wordpunct_tokenize(sent.lower())
-                sent_bow = utils.BOW(words, self.vocab)
+                sent_bow = {}
+                for word in words:
+                    if word in self.vocab:
+                        sent_bow[self.vocab[word]] = 0
                 sents_idx.append(words)
-                c[j] = len(list(set(sent_bow[0]).intersection(q_bow))) # Count how many elements they have in common
-                s[j] = len(sent_bow[0])
-
-            match_rate = 2 * c / (len(q_bow) + s)
+                c[j] = len(list(set(sent_bow.keys()) & set_q_bow)) # Count how many elements they have in common
+                s[j] = len(sent_bow)
+         
+            match_rate = 2 * c / (len(set_q_bow) + s)
             idx = np.argmax(match_rate)
-            #R[i/div] = float(match_rate[idx] == 1.) # make reward \in {0,1}
-            R[i/div] = match_rate[idx]
+            R[i/div] = float(match_rate[idx] == 1.) # make reward \in {0,1}
+            #R[i/div] = match_rate[idx] # make reward \in [0,1]
             best_pages_id[i/div] = ref_id[idx]
             sent_idx = utils.text2idx(sents_idx[idx], self.vocab)
             best_answers.append(sent_idx)
@@ -90,7 +100,6 @@ class Sentence(theano.Op):
         output_storage[0][0] = R
         output_storage[1][0] = best_pages_id
         output_storage[2][0] = best_answers_
-        #print 'time Sentence op:', str(time.time() - st)
         #with open('out.log', "a") as fout:
         #    fout.write('time Sentence op:' + str(time.time() - st) + '\n')
 
