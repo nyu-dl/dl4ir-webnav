@@ -1,10 +1,10 @@
 '''
-Class to access the Wikipedia articles' embeddings stored in the hdf5 file.
+Class to access the Wikipedia articles' word indexes stored in the hdf5 file.
 '''
 import h5py
 import parameters as prm
 
-class WikiEmb():
+class WikiIdx():
 
     def __init__(self, path):
         if prm.load_emb_mem:
@@ -13,7 +13,7 @@ class WikiEmb():
             # is faster for large number of indexes.
             ft = h5py.File(path, 'r')
             self.f = {}
-            self.f['emb'] = ft['emb'].value
+            self.f['idx'] = ft['idx'].value
             if 'mask' in ft:
                 self.f['mask'] = ft['mask'].value
 
@@ -21,8 +21,8 @@ class WikiEmb():
             self.f = h5py.File(path, 'r')
 
 
-    def get_article_emb(self, article_id):
-        return self.f['emb'][article_id]
+    def get_article_idx(self, article_id):
+        return self.f['idx'][article_id]
 
 
     def get_article_mask(self, article_id):

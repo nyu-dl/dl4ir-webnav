@@ -1,5 +1,5 @@
 '''
-Create dataset from a website.
+WebNav: Create a dataset from a website.
 The default parser is wiki_parser, but you can create your own parser.
 
 '''
@@ -15,10 +15,8 @@ import time
 import wiki_parser as parser
 import parameters as prm
 
-redirects = {} # Dic of pages and their redirections.
-
 print "loading class..."
-ps = parser.Parser(redirects)
+ps = parser.Parser()
 
 print 'loading vocabulary...'
 vocab = utils.load_vocab(prm.vocab_path, prm.n_words)
@@ -58,15 +56,12 @@ while hops <= prm.max_hops_pages:
                     if len(links) > prm.max_links:
                         continue
 
-          pages[title] = {}
-          pages[title]['text'] = text
-          pages[title]['links'] = links
-          #print 'time total', (time.time() - st), ' time inside', (time.time() - st1), ' time recursive', (st3 - st2)
+            pages[title] = {}
+            pages[title]['text'] = text
+            pages[title]['links'] = links
+            #print 'time total', (time.time() - st), ' time inside', (time.time() - st1), ' time recursive', (st3 - st2)
 
-          log_txt = 'hops: ' + str(hops) + ' page num: ' + str(len(pages)) 
-          with open('out2.log', 'a') as ftemp:
-              ftemp.write(log_txt+'\n')
-          print log_txt
+            print 'hops:', hops, 'page num:', len(pages)
 
         if title in pages: #if the page was added to the pages, then get some sample queries and next page
 
@@ -78,7 +73,7 @@ while hops <= prm.max_hops_pages:
                        
             # only get queries up to max_hops. Higher hops will be used to get other pages only.
             if hops <= np.asarray(prm.max_hops).max():
-                if ("category:" not in title) and (hops >= 1): # do not chose queries from categories or if it less than one hops
+                if ("category:" not in title) and (hops >= 1): # do not chose queries from categories or if it less than one hop
                     # compute TF
                     tf = utils.compute_tf(wordpunct_tokenize(pages[title]['text'].decode('ascii', 'ignore')), vocab)
                     # Get sentences
@@ -113,36 +108,27 @@ while hops <= prm.max_hops_pages:
                             sent = sents_filtered[sent_idx]
                             qp_all[title].append([sent, par_pages[title] + [title]])
                             n += 1
-                            log_txt = 'hops: ' + str(hops) + ' sample num: ' + str(n)
-                            with open('out2.log', 'a') as ftemp:
-                                ftemp.write(log_txt +'\n')
-                            print log_txt
+                            print 'hops:', hops, 'sample num:', n
 
     hops += 1
 
 f.close()
 
-# Apply link redirections.
-for title, article in pages.items():
-    for i,link in enumerate(article['links']):
-        if link in redirects:
-            article['links'].pop(i)
-            article['links'].insert(i,redirects[link])
+print 'Selecting paths for queries...'
+qp_all_ = {}
+i=0
 
-for page_qp in qp_all.values():
-    for _, path in page_qp:
-        for i, item in enumerate(path):
-            if title in redirects:
-                path.pop(i)
-                path.insert(i,redirects[link])
+for title, qp in qp_all.items():
+    st = time.time()
 
-for paths in paths_all:
-    for path in paths:
-        for i, item in enumerate(path):
-            if title in redirects:
-                path.pop(i)
-                path.insert(i,redirects[link])
+    _, path = qp[0]
+    
+    qp_all_[title] = []
+    for sent, _ in qp:
+        qp_all_[title].append([sent, path])
 
+    print 'query', i, 'time', time.time() - st
+    i += 1
 
 # Save pages to HDF5
 print 'Saving text and links...'
@@ -174,7 +160,7 @@ fout.close()
 
 
 print 'Saving query sentences...'
-lst_qp = qp_all.values()
+lst_qp = qp_all_.values()
 for mm, max_hop in enumerate(prm.max_hops):
 
     queries_all = []
@@ -198,7 +184,6 @@ for mm, max_hop in enumerate(prm.max_hops):
     queries_all = queries_all[::-1]
     paths_all = paths_all[::-1]
 
-
     # Save the queries and paths to HDF5
     qp_path_mod = prm.qp_path_pre.replace('.hdf5','') + '_' +str(max_hop) + 'hops.hdf5'
     os.remove(qp_path_mod) if os.path.exists(qp_path_mod) else None
@@ -207,20 +192,17 @@ for mm, max_hop in enumerate(prm.max_hops):
     # Write queries to file
     for i, set_name in enumerate(['train', 'valid', 'test']):    
         queries = queries_all[i]
+        paths_set = paths_all[i]
         ds = fout.create_dataset('queries_'+set_name, (len(queries),), dtype=dt)
+        dv = fout.create_dataset('paths_'+set_name, (len(paths_set),), dtype=dt)
         for j, query in enumerate(queries):
             ds[j] = query
-
-    # Convert title string to indexes in the path and write them to hdf5 file.
-    for i, set_name in enumerate(['train', 'valid', 'test']):    
-        paths_set = paths_all[i]
-        ds = fout.create_dataset('paths_'+set_name, (len(paths_set),), dtype=dt)
-        for j, paths in enumerate(paths_set):
-            paths_ = ''
-            for title in paths:
-                paths_ += str(title_idx[title]) + ' '
-            ds[j] = paths_.strip()
-
+            paths = ''
+            # Convert title string to indexes in the path and write them to hdf5 file.
+            for title in paths_set[j]:
+                paths += str(title_idx[title]) + ' '
+            dv[j] = paths.strip()
+            
     fout.close()
 
 

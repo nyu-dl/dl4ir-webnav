@@ -6,6 +6,7 @@ import numpy as np
 import cPickle as pkl
 from nltk.tokenize import wordpunct_tokenize
 import parameters as prm
+from random import randint
 
 def BOW(words, vocab):
     '''
@@ -60,7 +61,7 @@ def text2idx2(texts, vocab, dim):
     '''
     Convert a list of texts to their corresponding vocabulary indexes.
     '''
-    out = np.zeros((len(texts), dim), dtype=np.int32)
+    out = -np.ones((len(texts), dim), dtype=np.int32)
     mask = np.zeros((len(texts), dim), dtype=np.float32)
     for i, text in enumerate(texts):
         j = 0
@@ -143,6 +144,64 @@ def compute_tf(words, vocab):
     return out
 
 
+def load_synonyms():
+    dic_thes = {}
+    with open(prm.path_thes_dat, 'rb') as f:
+        data = f.read().lower()
+    header = 0
+    with open(prm.path_thes_idx, 'rb') as f:
+        for line in f:
+            if header < 2:
+                header += 1
+                continue
+            word_idx = line.rstrip().split("|")
+            word, idx = word_idx[0], word_idx[1]
+            idx = int(idx)
+            j=0
+            desc = ""
+            while data[idx+j] != "\n":
+                desc += data[idx+j]
+                j += 1
+            word_numlines = desc.rstrip().split("|")
+            word, numlines = word_numlines[0], word_numlines[1]
+            numlines = int(numlines)
+            dic_thes[word] = []
+            k = 0
+            desc = ""
+            while True:
+                j += 1 
+                desc += data[idx+j]
+                if data[idx+j] == "\n":
+                    k += 1
+                    synonyms = desc.rstrip().split("|")[1:] #do not consider the first word because it refers to the POS tagging
+                    dic_thes[word].extend(synonyms) #extend list of synonyms
+                    desc = "" #start a new line
+                if k == numlines:
+                    break
+    return dic_thes
 
 
+def augment(texts, dic_thes):
+    if prm.aug<2:
+        return texts
 
+    out = []
+    for text in texts:
+
+        words_orig = wordpunct_tokenize(text)
+        maxrep = max(2,int(0.1*len(words_orig))) #define how many words will be replaced. For now, leave the maximum number as 10% of the words
+        
+        for j in range(prm.aug):
+            words = list(words_orig) #copy
+            for k in range(randint(1,maxrep)):
+                idx = randint(0,len(words)-1)
+                word = words[idx]
+                if word in dic_thes:
+                    
+                    synonym = min(np.random.geometric(0.5), len(dic_thes[word])-1) #chose the synonym based on a geometric distribution
+                    #print 'fp',fp,"word", word,"synonym",dic_thes[word][synonym]
+                    words[idx] = dic_thes[word][synonym]
+
+            out.append(" ".join(words))
+
+    return out     

@@ -4,10 +4,9 @@ import parameters as prm
 
 class Parser():
 
-    def __init__(self, redirects):
+    def __init__(self):
 
         self.f = open(prm.dump_path, "rb")
-        self.redirects = redirects
         if prm.compute_page_pos:
             self.page_pos, self.cat_pages = self.precompute_idx()
             with open(prm.page_pos_path, "wb") as f:
@@ -124,15 +123,6 @@ class Parser():
 
             if ("<title>" in line) and ("</title>" in line) and pagebegin:
                 title = line.replace("    <title>","").replace("</title>\n","").lower()
-                #do not add pages that start with 'Wikipedia:'
-                if title.startswith('wikipedia:'):
-                    continue
-                if title.startswith('file:'):
-                    continue
-                if title.startswith('image:'):
-                    continue
-
-                page_pos[title] = pos
 
                 if n % 10000 == 0:
                     print n
@@ -153,6 +143,29 @@ class Parser():
             if ('</text>' in line) and pagebegin:
                 pagebegin = False
                 textbegin = False
+
+                # don't add if this is a redirect page.
+                skip = False
+                for p in text:
+                    if p.strip().lower().startswith('#redirect'):
+                        skip = True
+                        break
+
+                if skip:
+                    continue
+
+                #do not add pages that start with 'Wikipedia:', 'file:', 'image:' or 'template'.
+                if title.startswith('wikipedia:'):
+                    continue
+                if title.startswith('file:'):
+                    continue
+                if title.startswith('image:'):
+                    continue
+                if title.startswith('template:'):
+                    continue
+
+                if title not in page_pos:
+                    page_pos[title] = pos
 
                 for p in text:
                     if p.startswith('[[Category:'): # get the categories
@@ -238,11 +251,6 @@ class Parser():
                 #st3 = time.time()
                 # Get links
                 links = self.get_links(text)
- 
-                # if this is a redirected page, add it to the redirects dic but don't add it to the wikipedia dataset.
-                if text.strip().lower().startswith('#redirect'):
-                    self.redirects[title] = text.lower().split('#redirect')[1].strip().replace(']]', '').replace('[[', '')
-                    return None
 
                 return text, links 
 
