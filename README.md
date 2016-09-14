@@ -6,7 +6,9 @@ WebNav automatically transforms a website into this goal-driven web navigation t
 
 With this benchmark, we expect faster progress in developing artificial agents with natural language understanding and planning skills.
 
-Link to the paper: [End-to-End Goal-Driven Web Navigation](http://arxiv.org/pdf/1602.02261v1.pdf)
+Paper: [End-to-End Goal-Driven Web Navigation](http://arxiv.org/pdf/1602.02261v1.pdf)
+
+[Web Demo](http://webnav.cims.nyu.edu:10001/)
 
 
 ## WikiNav Dataset and Other Files
@@ -18,7 +20,7 @@ The WikiNav and WikiNav-Jeopardy datasets and auxiliary files can be [downloaded
 * **queries_paths.zip**: queries (up to four sentences, randomly extracted from the articles) and paths (list of pages to be followed until the page that contains the query is reached).
 * **queries_paths_jeopardy.hdf5**: Jeopardy! dataset: questions and answers pairs as well as the paths to the Wikipedia article whose title is the answer to the question.
 * **model_d.npz**: model (d) trained on WikiNav-16-4: 8-Layer LSTM with 2048 units + Attention on queries.
-* **D_cbow_pdw_8B.pkl**: a python dictionary containing 374,000 words where the values are pretrained embeddings as in ["Learning to Understand Phrases by Embedding the Dictionary"](http://arxiv.org/pdf/1504.00548v3.pdf).
+* **D_cbow_pdw_8B.pkl**: a python dictionary containing 374,000 words where the values are pretrained embeddings from ["Word2Vec tool"](https://code.google.com/archive/p/word2vec/).
 * **wiki_idf.pkl**: a python dictionary containing 374,000 words where the values are the Inverse Document Frequencies (IDF) computed from the English Wikipedia.
 * **cat_pages.pkl**: a python dictionary where the keys are the Wikipedia's categories and the values are the lists of pages inside the categories.
 * **page_pos.pkl**: a python dictionary where the keys are the articles' titles and the values are the page positions (offset in bytes) in the Wikipedia's dump file.
@@ -116,7 +118,7 @@ To run the code, you will need:
 * [NLTK](http://www.nltk.org/)
 * [h5py](http://www.h5py.org/)
 
-We recommend that you have at least 16GB of RAM. If you are going to use a GPU, the card must have at least 6GB.
+We recommend that you have at least 32GB of RAM. If you are going to use a GPU, the card must have at least 6GB.
 
 
 
@@ -125,15 +127,16 @@ We recommend that you have at least 16GB of RAM. If you are going to use a GPU, 
 If you use this code as part of any published research, please acknowledge the
 following paper:
 
-**"TITLE"**  
-AUTHORS*To appear CONFERENCE (2016)*
+**"End-to-End Goal-Driven Web Navigation"**  
+Nogueira, Rodrigo and Cho, Kyunghyun
+*To appear at NIPS (2016)*
 
-    @article{x,
-        title={x},
-        author={x},
-        journal={x},
-        year={}
-    } 
+@inproceedings{nogueira2016end,
+  title={End-to-End Goal-Driven Web Navigation},
+  author={Nogueira, Rodrigo and Cho, Kyunghyun},
+  booktitle={NIPS 2016},
+  year={2016}
+}
 
 ## License
 
