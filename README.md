@@ -131,12 +131,12 @@ following paper:
 Nogueira, Rodrigo and Cho, Kyunghyun
 *To appear at NIPS (2016)*
 
-@inproceedings{nogueira2016end,
-  title={End-to-End Goal-Driven Web Navigation},
-  author={Nogueira, Rodrigo and Cho, Kyunghyun},
-  booktitle={NIPS 2016},
-  year={2016}
-}
+    @inproceedings{nogueira2016end,
+      title={End-to-End Goal-Driven Web Navigation},
+      author={Nogueira, Rodrigo and Cho, Kyunghyun},
+      booktitle={NIPS 2016},
+      year={2016}
+    }
 
 ## License
 
