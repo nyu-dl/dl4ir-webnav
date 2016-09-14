@@ -128,7 +128,9 @@ If you use this code as part of any published research, please acknowledge the
 following paper:
 
 **"End-to-End Goal-Driven Web Navigation"**  
+
 Nogueira, Rodrigo and Cho, Kyunghyun
+
 *To appear at NIPS (2016)*
 
     @inproceedings{nogueira2016end,
