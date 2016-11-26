@@ -112,7 +112,6 @@ class Link(theano.Op):
                         L_m[i,:len(links)] = 1.0
 
                     l_page_id[i,1:len(links)+1] = links  # +1 because of the stop action.
-
                     for k, link_id in enumerate(links):
                         if link_id == p_truth[i]:
                             l_truth[i] = k + 1 # +1 because of the stop action.
@@ -123,6 +122,7 @@ class Link(theano.Op):
             else:                
                 self.mem = {uidx: {it: [L, L_m, l_page_id, l_truth]}}
 
+        
         output_storage[0][0] = L
         output_storage[1][0] = L_m
         output_storage[2][0] = l_page_id

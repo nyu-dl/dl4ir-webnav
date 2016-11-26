@@ -9,6 +9,7 @@ import csv
 import h5py
 import os
 import re
+import networkx as nx
 
 def lreplace(pattern, sub, string):
     """
@@ -56,68 +57,76 @@ wk = wiki.Wiki(prm.pages_path)
 titles_pos = wk.get_titles_pos()
 
 print 'Creating child-parent dictionary...'
-pars = {}
-curs = [titles_pos[prm.root_page]]
-while len(curs)>0:
-    nxts = []
-    for cur in curs:
-        links = wk.get_article_links(cur)        
-        for link in links:
-            if link not in pars:
-                nxts.append(link)
-                pars[link] = cur
-    curs = nxts
-    print 'len(pars)', len(pars)
+G = nx.DiGraph()
+
+for i, (title, idd) in enumerate(titles_pos.items()):
+
+    links = wk.get_article_links(idd) 
+    for link in links:
+        G.add_edge(idd, link, weight=1.)
+
+    if i % prm.dispFreq == 0:
+        print 'page', i
 
 print 'Finding paths to answers...'
 
-qatp = [] # questions, answers, wikipedia page ids, and path
+qat = [] # questions, answers, wikipedia page ids
+qs = [] # questions only
 with open(prm.jeopardy_path, 'rb') as csvfile:
 
     reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-    reader.next() #skip header
+    reader.next() # skip header
     i = 0
     for row in reader:
-        print 'sample', i
         q = row[3] + ' ' + row[5]
         a = row[6]
         t = get_title(a, titles_pos)
-        i += 1
         if t != '':
-            nxt = titles_pos[t]
-            p = [nxt]
-            while True:
-                if nxt in pars:
-                    nxt=pars[nxt]
-                    p.append(nxt)
-                    if nxt == titles_pos[prm.root_page]:
-                        break
-                else:
-                    break
-            p = p[::-1]
+            qat.append([q,a,t])
+            qs.append(q)
 
-            qatp.append([q,a,t,p])
+        if i % prm.dispFreq == 0:
+            print 'sample', i
+        i += 1
+ 
 
 print 'Finding candidate pages using the search engine...'
 
 if str(prm.search_engine).lower() == 'google':
     import google_search
-    candidates = google_search.get_candidates(qatp)
+    candidates = google_search.get_candidates(qs)
 if str(prm.search_engine).lower() == 'lucene':
     import lucene_search
-    candidates = lucene_search.get_candidates(qatp)
+    candidates = lucene_search.get_candidates(qs)
 elif str(prm.search_engine).lower() == 'simple':
     import simple_search
-    candidates = simple_search.get_candidates(qatp)
+    candidates = simple_search.get_candidates(qs)
 elif not prm.search_engine:
-    candidates = len(qatp)*[[]]
+    candidates = len(qs)*[[]]
 else:
     raise ValueError('Not a valid value for the search engine.' + \
-                     ' Valid options are: "lucene", "simple", and None.')
+                     ' Valid options are: "google", "lucene", "simple", and None.')
 
+print 'len(qat)', len(qat)
 qatpc = []
-for i,[q,a,t,p] in enumerate(qatp):
-    qatpc.append([q,a,t,p,candidates[i]])
+for i,[q,a,t] in enumerate(qat):
+
+    std_path = True
+    print 'q:', q,
+    print 't:', t
+    if not prm.start_from_root:
+        src = int(candidates[i][0])
+        print 'src:', src,
+        if len(wk.get_article_links(src)) > 0:
+            path_idx = nx.shortest_path(G, source=src, target=titles_pos[t])
+            if len(path_idx) <= prm.max_hops_pages + 1:
+                std_path = False
+    
+    if std_path:
+        path_idx = nx.shortest_path(G, source=titles_pos[prm.root_page], target=titles_pos[t])
+
+    if len(path_idx) <= prm.max_hops_pages + 1:
+        qatpc.append([q,a,t,path_idx,candidates[i]])
 
 print 'len(qatpc)', len(qatpc)
 

@@ -6,7 +6,7 @@ WebNav automatically transforms a website into this goal-driven web navigation t
 
 With this benchmark, we expect faster progress in developing artificial agents with natural language understanding and planning skills.
 
-Paper: [End-to-End Goal-Driven Web Navigation](http://arxiv.org/pdf/1602.02261v1.pdf)
+Paper: [End-to-End Goal-Driven Web Navigation](http://papers.nips.cc/paper/6064-end-to-end-goal-driven-web-navigation.pdf)
 
 [Web Demo](http://webnav.cims.nyu.edu:10001/)
 
@@ -17,9 +17,10 @@ The WikiNav and WikiNav-Jeopardy datasets and auxiliary files can be [downloaded
 
 * **wiki.hdf5**: English Wikipedia articles and hyperlinks (compiled from the [dump file of September/2015](https://dumps.wikimedia.org/enwiki/20150901/enwiki-20150901-pages-articles.xml.bz2)). In this dataset meta articles, whose titles start with "Wikipedia:", and articles with more than 300 hyperlinks are excluded. Any hyperlink that leads to a web page outside Wikipedia is removed in advance together with the following sections: "References", "External Links", "Bibliography" and "Partial Bibliography". Tables and figures are also removed.
 * **wiki_emb.hdf5**: Articles' embeddings, computed as the average word vector representation of all the words in the article. This file is used to speed-up training by providing pre-computed embeddings.
-* **queries_paths.zip**: queries (up to four sentences, randomly extracted from the articles) and paths (list of pages to be followed until the page that contains the query is reached).
+* **queries_paths_*hops.hdf5**: queries (up to four sentences, randomly extracted from the articles) and paths (list of pages to be followed until the page that contains the query is reached).
 * **queries_paths_jeopardy.hdf5**: Jeopardy! dataset: questions and answers pairs as well as the paths to the Wikipedia article whose title is the answer to the question.
-* **model_d.npz**: model (d) trained on WikiNav-16-4: 8-Layer LSTM with 2048 units + Attention on queries.
+* **model_wikinav-16-4.npz**: model trained on WikiNav-16-4: 4-Layer LSTM with 2048 units + Attention on queries.
+* **model_wikinav-jeopardy.npz**: model trained on WikiNav-Jeopardy: 4-Layer LSTM with 2048 units + Attention on queries.
 * **D_cbow_pdw_8B.pkl**: a python dictionary containing 374,000 words where the values are pretrained embeddings from ["Word2Vec tool"](https://code.google.com/archive/p/word2vec/).
 * **wiki_idf.pkl**: a python dictionary containing 374,000 words where the values are the Inverse Document Frequencies (IDF) computed from the English Wikipedia.
 * **cat_pages.pkl**: a python dictionary where the keys are the Wikipedia's categories and the values are the lists of pages inside the categories.
@@ -131,14 +132,14 @@ following paper:
 
 Rodrigo Nogueira and Kyunghyun Cho
 
-*To appear at NIPS (2016)*
-
     @inproceedings{nogueira2016end,
       title={End-to-End Goal-Driven Web Navigation},
       author={Nogueira, Rodrigo and Cho, Kyunghyun},
-      booktitle={NIPS 2016},
+      booktitle={Advances In Neural Information Processing Systems},
+      pages={1903--1911},
       year={2016}
     }
+
 
 ## License
 

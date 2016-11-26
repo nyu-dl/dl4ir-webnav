@@ -1,10 +1,18 @@
 import cPickle as pkl 
 import re
 import parameters as prm
+import os.path
+
 
 class Parser():
 
     def __init__(self):
+
+        # Check if wikidump file is there, otherwise, download it.
+        #if not os.path.isfile(prm.dump_path):
+        #    import urllib
+        #    print 'Downloading wikipedia'
+        #    urllib.urlretrieve(prm.dump_url, prm.dump_path)
 
         self.f = open(prm.dump_path, "rb")
         if prm.compute_page_pos:
@@ -23,7 +31,7 @@ class Parser():
 
     def get_links(self, text):
         '''
-        Return a dictionary of links found in the input text. A link is always between '[[' and ']]' .
+        Returns a list of links found in the input text. A link is always between '[[' and ']]'.
         '''
         links = [] 
         start = -1
@@ -35,7 +43,7 @@ class Parser():
                 link = text[start:i]
                 link = link.split("|")[0].strip() # Get only the first part of the link.
                
-                if link in self.page_pos:  # Only add link if it is in the list of pages.
+                if link.lower() in self.page_pos:  # Only add link if it is in the list of pages.
                     links.append(link.lower())
 
                 start = -1
@@ -125,7 +133,7 @@ class Parser():
                 title = line.replace("    <title>","").replace("</title>\n","").lower()
 
                 if n % 10000 == 0:
-                    print n
+                    print 'indexing doc', n
                 n += 1
 
                 #if n > 1000000:

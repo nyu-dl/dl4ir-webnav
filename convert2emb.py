@@ -54,8 +54,10 @@ def compute_emb(pages_path_in, pages_path_out, vocab):
                     segs[-1] += line + '\n'
             elif prm.att_segment_type.lower() == 'sentence':
                 segs = tokenizer.tokenize(text.decode('ascii', 'ignore'))
+            elif prm.att_segment_type.lower() == 'word':
+                segs = wordpunct_tokenize(text.decode('ascii', 'ignore'))
             else:
-                raise ValueError('Not a valid value for the attention segment type (att_segment_type) parameter. Valid options are "section", "subsection" or "sentence".')
+                raise ValueError('Not a valid value for the attention segment type (att_segment_type) parameter. Valid options are "section", "subsection", "sentence" or "word".')
 
             segs = segs[:prm.max_segs_doc]
             emb_ = utils.Word2Vec_encode(segs, wemb)
@@ -69,7 +71,8 @@ def compute_emb(pages_path_in, pages_path_out, vocab):
         #if i > 3000:
         #    break
 
-        print 'processing article', i, 'time', time.time()-st
+        if i % prm.dispFreq == 0:
+            print 'processing article', i, 'time', time.time()-st
 
     f.close()
     fout.close()

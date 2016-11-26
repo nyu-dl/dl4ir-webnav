@@ -10,7 +10,7 @@ from nltk.tokenize import wordpunct_tokenize
 import nltk.data
 import h5py
 import os
-import convert2emb
+
 import time
 import wiki_parser as parser
 import parameters as prm
@@ -53,8 +53,7 @@ while hops <= prm.max_hops_pages:
                 text, links = article
 
                 if prm.max_links:
-                    if len(links) > prm.max_links:
-                        continue
+                     links = links[:prm.max_links]
 
             pages[title] = {}
             pages[title]['text'] = text
@@ -126,8 +125,8 @@ for title, qp in qp_all.items():
     qp_all_[title] = []
     for sent, _ in qp:
         qp_all_[title].append([sent, path])
-
-    print 'query', i, 'time', time.time() - st
+    if i % prm.dispFreq == 0:
+        print 'query', i, 'time', time.time() - st
     i += 1
 
 # Save pages to HDF5
@@ -139,16 +138,14 @@ dt = h5py.special_dtype(vlen=bytes)
 articles = fout.create_dataset("text", (len(pages),), dtype=dt)
 titles = fout.create_dataset("title", (len(pages),), dtype=dt)
 i=0
-n_links = 0
 title_idx = {}
 for title, article in pages.items():
-    articles[i] =  article['text']
-    titles[i] =  title
+    articles[i] = article['text']
+    titles[i] = title
     title_idx[title] = i
     i += 1
-    n_links += len(article['text'])
 
-links = fout.create_dataset("links", (n_links,), dtype=dt)
+links = fout.create_dataset("links", (len(pages),), dtype=dt)
 for i, article in enumerate(pages.values()):
     links_txt = ''
     for link in article['links']:
@@ -207,7 +204,14 @@ for mm, max_hop in enumerate(prm.max_hops):
 
 
 if prm.pages_emb_path:
+    import convert2emb
     print 'Computing embeddings...'
     convert2emb.compute_emb(prm.pages_path, prm.pages_emb_path, vocab)
+
+if prm.pages_idx_path:
+    import convert2idx
+    print 'Computing indexes...'
+    convert2idx.compute_idx(prm.pages_path, prm.pages_idx_path, vocab)
+
 
 print 'done'

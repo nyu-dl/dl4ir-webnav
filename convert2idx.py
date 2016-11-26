@@ -1,5 +1,5 @@
 '''
-Convert article's text in the dataset to word embeddings using a pretrained word2vec dictionary.
+Convert article's text to word indexes.
 '''
 import h5py
 import numpy as np
@@ -8,6 +8,8 @@ import utils
 import os
 import parameters as prm
 import time
+from nltk.tokenize import wordpunct_tokenize
+
 
 def compute_idx(pages_path_in, pages_path_out, vocab):
 
@@ -46,9 +48,11 @@ def compute_idx(pages_path_in, pages_path_out, vocab):
                     segs[-1] += line.lower() + '\n'
             elif prm.att_segment_type.lower() == 'sentence':
                 segs = tokenizer.tokenize(text.lower().decode('ascii', 'ignore'))
+            elif prm.att_segment_type.lower() == 'word':
+                segs = wordpunct_tokenize(text.decode('ascii', 'ignore'))
             else:
-                raise ValueError('Not a valid value for the attention segment type (att_segment_type) parameter. Valid options are "section", "subsection" or "sentence".')
-
+                raise ValueError('Not a valid value for the attention segment type (att_segment_type) parameter. Valid options are "section", "subsection", "sentence", or "word".')
+            
             segs = segs[:prm.max_segs_doc]
             idxs_, _ = utils.text2idx2(segs, vocab, prm.max_words)
             idxs[i,:len(idxs_),:] = idxs_

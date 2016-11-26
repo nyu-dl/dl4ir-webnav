@@ -20,7 +20,7 @@ class Wiki():
     def get_article_links(self, article_id):       
         links = self.f['links'][article_id].strip().split(' ')
         if links[0] != '':
-            links = [int(i) for i in links] #convert to integer
+            links = map(int, links)
         else:
             links = []
         return links
