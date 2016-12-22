@@ -98,13 +98,13 @@ A simple example of a parser class with no text cleaning is provided in simple_p
 After changing the properties in the parameters.py file to point to your local paths, the model can be trained using the following command:
 
 ```
-THEANO_FLAGS='floatX=float32' python run.py
+THEANO_FLAGS='floatX=float32' python neuagent.py
 ```
 
 If you want to use a GPU:
 
 ```
-THEANO_FLAGS='floatX=float32,device=gpu0,nvcc.fastmath=True' python run.py
+THEANO_FLAGS='floatX=float32,device=gpu0,nvcc.fastmath=True' python neuagent.py
 ```
 
 
