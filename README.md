@@ -8,12 +8,12 @@ With this benchmark, we expect faster progress in developing artificial agents w
 
 Paper: [End-to-End Goal-Driven Web Navigation](http://papers.nips.cc/paper/6064-end-to-end-goal-driven-web-navigation.pdf)
 
-[Web Demo](http://webnav.cims.nyu.edu:10001/)
+<!---[Web Demo](http://webnav.cims.nyu.edu:10001/)--->
 
 
 ## WikiNav Dataset and Other Files
 
-The WikiNav and WikiNav-Jeopardy datasets and auxiliary files can be [downloaded here](https://drive.google.com/folderview?id=0B5LbsF7OcHjqUFhWQ242bzdlTWc&usp=sharing):
+The WikiNav and WikiNav-Jeopardy datasets and auxiliary files can be [downloaded here](https://drive.google.com/drive/folders/0BwmD_VLjROrfbVNMYjFtRXItRjg?usp=sharing):
 
 * **wiki.hdf5**: English Wikipedia articles and hyperlinks (compiled from the [dump file of September/2015](https://dumps.wikimedia.org/enwiki/20150901/enwiki-20150901-pages-articles.xml.bz2)). In this dataset, meta articles, whose titles start with "Wikipedia:", are removed. Only the first 300 hyperlinks of an article are kept. Any hyperlink that leads to a web page outside Wikipedia is removed in advance together with the following sections: "References", "External Links", "Bibliography" and "Partial Bibliography". Tables and figures are also removed.
 * **wiki_emb.hdf5**: Articles' embeddings, computed as the average word vector representation of all the words in the article. This file is used to speed-up training by providing pre-computed embeddings.
